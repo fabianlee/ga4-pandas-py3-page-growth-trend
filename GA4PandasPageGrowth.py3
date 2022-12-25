@@ -43,7 +43,7 @@ def build_filter_expression():
   #    )
   #  ))
 
-  # FILTER EXAMPLE#3: exludes wordpress special paths
+  # FILTER EXAMPLE#3: exludes multiple wordpress special paths using NOT and AND
   wp_pagefilter=gp.FilterExpression()
   for to_exclude in ["/category","/tag/","/page/"]:
     wp_pagefilter.and_group.expressions.append(gp.FilterExpression(
