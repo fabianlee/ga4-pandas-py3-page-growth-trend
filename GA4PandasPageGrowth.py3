@@ -12,7 +12,6 @@
 # pip3 install google-analytics-data
 # pip3 install --upgrade oauth2client
 # pip3 install gapandas4
-# pip3 install tabulate
 # pip3 freeze | tee requirements.txt
 #
 import sys
