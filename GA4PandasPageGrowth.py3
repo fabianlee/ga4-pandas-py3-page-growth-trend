@@ -43,9 +43,17 @@ def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDate
     # filter to exclude wordpress special paths
     wp_pagefilter=gp.FilterExpression()
     for to_exclude in ["/category","/tag/","/page/"]:
-      wp_pagefilter.and_group.expressions.append(gp.FilterExpression(not_expression=gp.FilterExpression(
-        filter=gp.Filter(field_name="pagePath",string_filter=gp.Filter.StringFilter(match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,value=to_exclude))
-        )))
+      wp_pagefilter.and_group.expressions.append(gp.FilterExpression(
+        not_expression=gp.FilterExpression(
+          filter=gp.Filter(
+            field_name="pagePath",
+            string_filter=gp.Filter.StringFilter(
+              match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,
+              value=to_exclude
+            )
+          )
+        )
+      ))
     request = gp.RunReportRequest(
         property=f"properties/{property_id}",
         dimensions=[gp.Dimension(name="pagePath")],
@@ -70,7 +78,7 @@ def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDate
     df = df.sort_values('activeUsers',ascending=False)
 
     # uses 'tabulate' module
-    print(df.to_markdown())
+    #print(df.to_markdown())
 
     return df
 
