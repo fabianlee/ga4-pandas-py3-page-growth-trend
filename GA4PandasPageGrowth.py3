@@ -139,8 +139,6 @@ def main():
   print(f"service account json={args.key}, Google Analytics propertyID={args.propertyId}, reporting window={args.days} days")
   #client = initialize_ga4_analyticsreporting(args.key)
 
-  #sample_run_report(client,args.propertyId)
-  
   # get unique page counts per reporting day width
   ndays=int(args.days)
   response_latest = get_unique_pagecount_report(args.key, args.propertyId, startDateStr=f"{ndays}daysAgo", endDateStr="0daysAgo")
