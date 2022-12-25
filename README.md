@@ -5,7 +5,12 @@
 * Which pages have grown/lost in absolute counts
 * Which pages are trending growth/loss in terms of their percent (up-and-comers)
 
-This [GA4PageGrowth.py3](GA4PageGrowth.py3) Python script uses the [gapandas4 module](https://github.com/practical-data-science/gapandas4) to query a window of GA4 data (default=30 days), and compares it to the 30 days preceding to show which pages have grown/lost in absolute terms as well as percent.
+This [GA4PandasPageGrowth.py3](GA4PandasPageGrowth.py3) Python script uses the [gapandas4 module](https://github.com/practical-data-science/gapandas4) to:
+
+* Query a window of GA4 data (default=30 days)
+* Put it into a [pandas DataFrame](https://www.geeksforgeeks.org/python-pandas-dataframe/)
+* Compare it to the 30 days preceding by calculating delta and deltaPercent
+* Report on which pages have grown/lost in absolute terms as well as percent
 
 This can help you fine-tune your content creation, and invest in content that is showing the largest potential.
 
