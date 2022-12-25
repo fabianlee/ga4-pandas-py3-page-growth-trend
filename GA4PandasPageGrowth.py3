@@ -22,38 +22,52 @@ import gapandas4 as gp
 # used for 'to_markdown' on DataFrame
 import tabulate
 
+def build_filter_expression():
+  """The Data API v1 can filter data during query, use this to exclude pagePath we do not want to consider"""
+
+  # FILTER EXAMPLE#1: simple filter to show only pagePath containing 'kubernetes'
+  #wp_pagefilter=gp.FilterExpression(
+  #    filter=gp.Filter(field_name="pagePath",string_filter=gp.Filter.StringFilter(match_type=gp.Filter.StringFilter.MatchType.CONTAINS,value="kubernetes"))
+  #  )
+
+  # FILTER EXAMPLE#2: OR filter to show pagePath containing 'kubernetes' OR 'gke'
+  #gp_pagefilter=gp.FilterExpression()
+  #for to_include in ["kubernetes","gke"]:
+  #  wp_pagefilter.or_group.expressions.append(gp.FilterExpression(
+  #      filter=gp.Filter(
+  #        field_name="pagePath",
+  #        string_filter=gp.Filter.StringFilter(
+  #          match_type=gp.Filter.StringFilter.MatchType.CONTAINS,
+  #          value=to_include
+  #        )
+  #    )
+  #  ))
+
+  # FILTER EXAMPLE#3: exludes wordpress special paths
+  wp_pagefilter=gp.FilterExpression()
+  for to_exclude in ["/category","/tag/","/page/"]:
+    wp_pagefilter.and_group.expressions.append(gp.FilterExpression(
+      not_expression=gp.FilterExpression(
+        filter=gp.Filter(
+          field_name="pagePath",
+          string_filter=gp.Filter.StringFilter(
+            match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,
+            value=to_exclude
+          )
+        )
+      )
+    ))
+
+  return wp_pagefilter
+
+
 def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDateStr):
     """Runs a report on a Google Analytics GA4 property."""
 
-#    EXAMPLE OF SIMPLE FILTER, we will use more advanced FilterExpressionList
-#
-#    request = gp.RunReportRequest(
-#        property=f"properties/{property_id}",
-#        dimensions=[gp.Dimension(name="pagePath")],
-#        metrics=[gp.Metric(name="activeUsers")],
-#        date_ranges=[gp.DateRange(start_date=startDateStr, end_date=endDateStr)],
-#        dimension_filter=gp.FilterExpression(
-#          not_expression=gp.FilterExpression(
-#            filter=gp.Filter(field_name="pagePath",string_filter=gp.Filter.StringFilter(match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,value="/category/"))
-#          )
-#        ),
-#        order_bys=[ gp.OrderBy(metric = {'metric_name': 'activeUsers'}, desc = False) ]
-#    )
+    # filter for Data API v1
+    wp_pagefilter = build_filter_expression()
 
-    # filter to exclude wordpress special paths
-    wp_pagefilter=gp.FilterExpression()
-    for to_exclude in ["/category","/tag/","/page/"]:
-      wp_pagefilter.and_group.expressions.append(gp.FilterExpression(
-        not_expression=gp.FilterExpression(
-          filter=gp.Filter(
-            field_name="pagePath",
-            string_filter=gp.Filter.StringFilter(
-              match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,
-              value=to_exclude
-            )
-          )
-        )
-      ))
+    # run request against Data API v1, GA4
     request = gp.RunReportRequest(
         property=f"properties/{property_id}",
         dimensions=[gp.Dimension(name="pagePath")],
@@ -65,19 +79,22 @@ def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDate
     # gp.Filter.StringFilter.MatchType.CONTAINS
     df = gp.query(jsonKeyFilePath,request,report_type="report")
 
+    # removal of rows now done earlier (and more efficiently) with filter to Data API v1
     # filter out all rows that contain special chars, are wordpress special paths, or len<16
-    targets = ['?','&',"/category/","/page/","/tag/"]
+    #targets = ['?','&',"/category/","/page/","/tag/"]
     #df = df[df.apply(lambda r: any([not kw in r[0] for kw in targets]), axis=1)]
-    # filter out rows with short path lengths which includes those with dates only (e.g. /2017/08/31)
-    df = df[df.apply(lambda r: any([len(r[0])>16 for kw in targets ]), axis=1)]
 
-    # make sure count is integer for sorting later
+    # filter out rows with short path lengths
+    # especially date paths from wordpress (e.g. /2017/08/31)
+    df = df[df['pagePath'].str.len()>16] # must be at least 16 chars or row thrown out!
+
+    # ensure count is of type integer for sorting later
     df['activeUsers'] = df['activeUsers'].astype(str).astype(int)
 
-    # sort by count
+    # sort by page count
     df = df.sort_values('activeUsers',ascending=False)
 
-    # uses 'tabulate' module
+    # for debug, uses 'tabulate' module
     #print(df.to_markdown())
 
     return df
