@@ -1,4 +1,4 @@
-# Page growth/trend report from Google Analytics Data API v1 and GA4 Property
+# Page growth/trend report from Google Analytics Data API v1 and GA4 Property using gapandas4
 
 [Google Analytics](https://analytics.google.com/) makes it easy to view your page counts for an arbitrary date range, but what is more difficult is comparing these results to an older window of data to see:
 
@@ -35,8 +35,8 @@ This script uses the latest [Google Analytics Data API v1](https://developers.go
 sudo apt-get update
 sudo apt-get install software-properties-common python3 python3-dev python3-pip python3-venv curl git -y
 
-git clone https://github.com/fabianlee/google-analytics-py3-page-growth-trend-report.git
-cd google-analytics-py3-page-growth-trend-report
+git clone https://github.com/fabianlee/ga4-pandas-py3-page-growth-trend.git
+cd ga4-pandas-py3-page-growth-trend
 
 # create virtual env for isolated libs
 python3 -m venv .
@@ -52,10 +52,10 @@ pip3 install -r requirements.txt
 # place json key into this directory
 
 # invoke report generator
-./GA4PageGrowth.py3 <jsonKeyFile> <analyticsPropertyID>
+./GA4PandasPageGrowth.py3 <jsonKeyFile> <analyticsPropertyID>
 
 # width of report window can be changed (default=30 days)
-./GA4PageGrowth.py3 <jsonKeyFile> <analyticsPropertyID> -d 14
+./GA4PandasPageGrowth.py3 <jsonKeyFile> <analyticsPropertyID> -d 14
 ```
 
 
