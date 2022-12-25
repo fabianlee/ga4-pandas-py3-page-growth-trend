@@ -19,6 +19,7 @@ import traceback
 import argparse
 
 import gapandas4 as gp
+# used for 'to_markdown' on DataFrame
 import tabulate
 
 def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDateStr):
