@@ -19,30 +19,57 @@ import traceback
 import argparse
 
 import gapandas4 as gp
+import tabulate
 
 def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDateStr):
     """Runs a report on a Google Analytics GA4 property."""
 
+#    EXAMPLE OF SIMPLE FILTER, we will use more advanced FilterExpressionList
+#
+#    request = gp.RunReportRequest(
+#        property=f"properties/{property_id}",
+#        dimensions=[gp.Dimension(name="pagePath")],
+#        metrics=[gp.Metric(name="activeUsers")],
+#        date_ranges=[gp.DateRange(start_date=startDateStr, end_date=endDateStr)],
+#        dimension_filter=gp.FilterExpression(
+#          not_expression=gp.FilterExpression(
+#            filter=gp.Filter(field_name="pagePath",string_filter=gp.Filter.StringFilter(match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,value="/category/"))
+#          )
+#        ),
+#        order_bys=[ gp.OrderBy(metric = {'metric_name': 'activeUsers'}, desc = False) ]
+#    )
+
+    # filter to exclude wordpress special paths
+    wp_pagefilter=gp.FilterExpression()
+    for to_exclude in ["/category","/tag/","/page/"]:
+      wp_pagefilter.and_group.expressions.append(gp.FilterExpression(not_expression=gp.FilterExpression(
+        filter=gp.Filter(field_name="pagePath",string_filter=gp.Filter.StringFilter(match_type=gp.Filter.StringFilter.MatchType.BEGINS_WITH,value=to_exclude))
+        )))
     request = gp.RunReportRequest(
         property=f"properties/{property_id}",
         dimensions=[gp.Dimension(name="pagePath")],
         metrics=[gp.Metric(name="activeUsers")],
         date_ranges=[gp.DateRange(start_date=startDateStr, end_date=endDateStr)],
+        dimension_filter=wp_pagefilter,
         order_bys=[ gp.OrderBy(metric = {'metric_name': 'activeUsers'}, desc = False) ]
     )
+    # gp.Filter.StringFilter.MatchType.CONTAINS
     df = gp.query(jsonKeyFilePath,request,report_type="report")
-    #print(df.head)
 
     # filter out all rows that contain special chars, are wordpress special paths, or len<16
     targets = ['?','&',"/category/","/page/","/tag/"]
-    df = df[df.apply(lambda r: any([not kw in r[0] for kw in targets]), axis=1)]
-    df = df[df.apply(lambda r: any([len(r[0])>16 for kw in targets]), axis=1)]
+    #df = df[df.apply(lambda r: any([not kw in r[0] for kw in targets]), axis=1)]
+    # filter out rows with short path lengths which includes those with dates only (e.g. /2017/08/31)
+    df = df[df.apply(lambda r: any([len(r[0])>16 for kw in targets ]), axis=1)]
 
     # make sure count is integer for sorting later
     df['activeUsers'] = df['activeUsers'].astype(str).astype(int)
 
     # sort by count
     df = df.sort_values('activeUsers',ascending=False)
+
+    # uses 'tabulate' module
+    print(df.to_markdown())
 
     return df
 
