@@ -31,7 +31,7 @@ def build_filter_expression():
   #  )
 
   # FILTER EXAMPLE#2: OR filter to show pagePath containing 'kubernetes' OR 'gke'
-  #gp_pagefilter=gp.FilterExpression()
+  #wp_pagefilter=gp.FilterExpression()
   #for to_include in ["kubernetes","gke"]:
   #  wp_pagefilter.or_group.expressions.append(gp.FilterExpression(
   #      filter=gp.Filter(
