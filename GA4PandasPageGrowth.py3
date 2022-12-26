@@ -86,7 +86,7 @@ def get_unique_pagecount_report(jsonKeyFilePath,property_id,startDateStr,endDate
 
     # filter out rows with short path lengths
     # especially date paths from wordpress (e.g. /2017/08/31)
-    df = df[df['pagePath'].str.len()>16] # must be at least 16 chars or row thrown out!
+    df = df[df['pagePath'].str.len()>=16] # must be at least 16 chars or row thrown out!
 
     # ensure count is of type integer for sorting later
     df['activeUsers'] = df['activeUsers'].astype(str).astype(int)
