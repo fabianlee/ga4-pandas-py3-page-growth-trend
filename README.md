@@ -10,7 +10,7 @@ This [GA4PandasPageGrowth.py3](GA4PandasPageGrowth.py3) Python script uses the [
 * Query a window of GA4 data (default=today-30daysAgo), create [pandas DataFrame](https://www.geeksforgeeks.org/python-pandas-dataframe/)
 * Query the preceding window of GA4 data (default=30daysAgo-60daysAgo), create pandas DataFrame
 * Merge older DataFrame page counts, sythesize delta and deltaPercentage
-* Sort by page counts, show biggest absolute winners/losers
+* Sort by absolute page counts, show biggest absolute winners/losers
 * Sorty by delta percent changes, show biggest trending winners/losers
 
 This can help you fine-tune your content creation, and invest in content that is showing the largest potential.
