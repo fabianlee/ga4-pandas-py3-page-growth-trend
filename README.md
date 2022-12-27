@@ -15,6 +15,8 @@ This [GA4PandasPageGrowth.py3](GA4PandasPageGrowth.py3) Python script uses the [
 
 This can help you fine-tune your content creation, and invest in content that is showing the largest potential.
 
+If you are interested in a graphic visualization of these trends, see my other github project [ga4-pandas-py3-treemap](https://github.com/fabianlee/ga4-pandas-py3-treemap) which exports a TreeMap visualization using plotly.
+
 # Google Analytics GA4 is future model
 
 The [gapandas4 module](https://github.com/practical-data-science/gapandas4) uses the latest [Google Analytics Data API v1](https://developers.google.com/analytics/devguides/reporting/data/v1) (GA4 using propertyId) data source, and not the deprecated [Google Analytics Reporting API v4](https://developers.google.com/analytics/devguides/reporting/core/v4) (UA using viewId), which is scheduled to be turned off in June 2023.
